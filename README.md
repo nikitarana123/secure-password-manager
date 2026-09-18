@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a Secure Password Manager developed using Python, Flask, SQLite, and Cryptography. It allows users to securely register, log in, generate strong passwords, and store website credentials in an encrypted database.
+This project is a Secure Password Manager developed using Python, Flask, SQLite, and Cryptography. It allows users to securely register, log in, random password generation using Python’s secrets module, and store website credentials in an encrypted database.
 
 ## Features
 
@@ -16,11 +16,12 @@ This project is a Secure Password Manager developed using Python, Flask, SQLite,
 - View Saved Passwords
 - Delete Password
 - SQLite Database
-- CSRF Protection
+- CSRF Protection for Web Forms
 
 ## Technologies Used
 
 - Python
+- Python Secrets Module
 - Flask
 - Flask-SQLAlchemy
 - Flask-WTF
