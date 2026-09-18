@@ -1,4 +1,4 @@
-import random
+import secrets
 
 import string
 
@@ -28,7 +28,7 @@ def generate_password():
     password = ""
 
     for i in range(12):
-        password += random.choice(characters)
+        password += secrets.choice(characters)
 
     return password
 
@@ -83,6 +83,7 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
+            session["user_id"] = user.id
             return redirect("/dashboard")
 
         flash("Invalid Email or Password")
@@ -92,6 +93,9 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
+ 
+    if "user_id" not in session:
+        return redirect("/login")
 
     return render_template("dashboard.html")
 
@@ -105,6 +109,9 @@ def logout():
 @app.route("/add-password", methods=["GET", "POST"])
 def add_password():
 
+    if "user_id" not in session:
+        return redirect("/login")
+
     if request.method == "POST":
 
         website = request.form["website"]
@@ -115,7 +122,8 @@ def add_password():
         new_password = Password(
             website=website,
             username=username,
-            password=encrypted_password
+            password=encrypted_password,
+            user_id=session["user_id"]
         )
 
         db.session.add(new_password)
@@ -130,7 +138,10 @@ def add_password():
 @app.route("/view-passwords")
 def view_passwords():
 
-    passwords = Password.query.all()
+    if "user_id" not in session:
+        return redirect("/login")
+
+    passwords = Password.query.filter_by(user_id=session["user_id"]).all()
 
     for item in passwords:
         item.password = cipher.decrypt(item.password.encode()).decode()
@@ -144,7 +155,12 @@ def view_passwords():
 @app.route("/delete-password/<int:id>")
 def delete_password(id):
 
-    password = Password.query.get(id)
+    if "user_id" not in session:
+        return redirect("/login")
+
+    
+
+    password = Password.query.filter_by(id=id, user_id=session["user_id"]).first()
 
     if password:
         db.session.delete(password)
@@ -154,6 +170,9 @@ def delete_password(id):
 
 @app.route("/generate-password")
 def password_generator():
+
+    if "user_id" not in session:
+        return redirect("/login")
 
     password = generate_password()
 
